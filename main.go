@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
-
+	"demo/conf"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -37,7 +37,18 @@ type Post struct {
 }
 
 func main() {
-	client1, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://dreamfly:fujia@cluster0.7eeqx.mongodb.net/game_report?retryWrites=true&w=majority"))
+	
+	myConfig := new(conf.Config)
+	myConfig.InitConfig("config.ini")
+	username := myConfig.Read("database","username")
+	password := myConfig.Read("database","password")
+	host     := myConfig.Read("database","host")
+	db		 := myConfig.Read("database","db")
+
+	connectstr := "mongodb+srv://" + username + ":" + password + "@" + host + "/" + db + "?retryWrites=true&w=majority"
+	
+    fmt.Println(connectstr)
+	client1, err := mongo.NewClient(options.Client().ApplyURI(connectstr))
 	if err != nil {
 		log.Fatal(err)
 	}
